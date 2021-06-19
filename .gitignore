@@ -1,0 +1,11 @@
+
+*.pkl
+*.bat
+*.obj
+*.lib
+*.exp
+*.docx
+*.c
+*.pyd
+*.html
+*.pyx
