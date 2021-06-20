@@ -145,9 +145,11 @@ class Retina:
         if rgb:
             self.sample = self.sample_rgb
             self.backProject = self.backProject_rgb
+            self.getResult = lambda: divideRGB(np.copy(self.sampledVector), self.scalingFactor)
         else:
             self.sample = self.sample_gray
             self.backProject = self.backProject_gray
+            self.getResult = lambda: (self.sampledVector/self.scalingFactor).astype(types['RESULT'])
         
         self.setInputResolution(img.shape[1],img.shape[0])
         self.setFixation(img.shape[1]/2,img.shape[0]/2)
@@ -189,11 +191,9 @@ class Cortex:
         self.left_hemi_size, self.right_hemi_size = hemi_sizes
         
     def createNormVect(self):
-        ones = np.ones(self.size[0]*self.size[1],dtype=types['INPUT'])
-        sampledVector = np.zeros(len(self.size_array), dtype=types['RESULT'])
-        sample(ones,self.coeff_array,sampledVector,self.size_array,self.index_array)
+        ones = np.ones(len(self.size_array), dtype=types['RESULT'])
         self.backProjectedVector = np.zeros(self.size[0]*self.size[1], dtype=types['BAKC_PROJECTED'])
-        backProject(sampledVector, self.coeff_array, self.backProjectedVector, self.size_array, self.index_array)
+        backProject(ones, self.coeff_array, self.backProjectedVector, self.size_array, self.index_array)
         self.normalizationVector = np.copy(self.backProjectedVector)
         self.normalizationVector[np.where(self.normalizationVector==0)]=1
 

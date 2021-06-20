@@ -1,4 +1,3 @@
-- FIX THREADING
-- Generation performance
 - Float support
 - Platform support (CUDA, FPGA)
+- Generation performance

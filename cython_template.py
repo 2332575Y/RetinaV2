@@ -69,9 +69,10 @@ cpdef backProject({RESULT}[::1] result_flat, {COEFFICIENT}[::1] coeffs, {BAKC_PR
     cdef {INDEX} j
     cdef {INDEX} i=0
     with nogil:
-        for x in range(result_flat.shape[0]):
+        for x in range(sizes.shape[0]):
             for j in range(i, i+(sizes[x])):
-                back_projected[idx[j]] += <{BAKC_PROJECTED}>result_flat[x]*coeffs[j]
+                if result_flat[x]>0:
+                    back_projected[idx[j]] += <{BAKC_PROJECTED}>result_flat[x]*coeffs[j]
             i += sizes[x]
 
 @cython.wraparound(False)
@@ -79,12 +80,10 @@ cpdef backProject({RESULT}[::1] result_flat, {COEFFICIENT}[::1] coeffs, {BAKC_PR
 @cython.cdivision(True)
 cpdef normalize({BAKC_PROJECTED}[::1] BP_flat, {BAKC_PROJECTED}[::1] norm_flat):
     cdef unsigned int x
-    cdef {BAKC_PROJECTED} c
     with nogil:
         for x in range(BP_flat.shape[0]):
-            c = norm_flat[x]
-            if c>1:
-                BP_flat[x] = BP_flat[x]//c
+            if norm_flat[x]>1:
+                BP_flat[x] = BP_flat[x]//norm_flat[x]
 
 #########################################
 ################## RGB ##################
@@ -111,11 +110,11 @@ cpdef backProjectRGB({RESULT}[::1] result_R, {RESULT}[::1] result_G, {RESULT}[::
     cdef {INDEX} j
     cdef {INDEX} i=0
     with nogil:
-        for x in range(result_R.shape[0]):
+        for x in range(sizes.shape[0]):
             for j in range(i, i+(sizes[x])):
-                bp_R[idx[j]] += <{BAKC_PROJECTED}>result_R[x]*coeffs[j]
-                bp_G[idx[j]] += <{BAKC_PROJECTED}>result_G[x]*coeffs[j]
-                bp_B[idx[j]] += <{BAKC_PROJECTED}>result_B[x]*coeffs[j]
+                    bp_R[idx[j]] += <{BAKC_PROJECTED}>result_R[x]*coeffs[j]
+                    bp_G[idx[j]] += <{BAKC_PROJECTED}>result_G[x]*coeffs[j]
+                    bp_B[idx[j]] += <{BAKC_PROJECTED}>result_B[x]*coeffs[j]
             i += sizes[x]
 
 @cython.wraparound(False)
@@ -131,3 +130,15 @@ cpdef normalizeRGB({BAKC_PROJECTED}[::1] R_flat, {BAKC_PROJECTED}[::1] G_flat, {
                 R_flat[x] = R_flat[x]//c
                 G_flat[x] = G_flat[x]//c
                 B_flat[x] = B_flat[x]//c
+
+@cython.wraparound(False)
+@cython.boundscheck(False)
+@cython.cdivision(True)
+cpdef divideRGB({RESULT}[:,::1] result , double c):
+    cdef {INDEX} x
+    with nogil:
+        for x in range(result.shape[1]):
+            result[0,x] = <{RESULT}>(result[0,x]//c)
+            result[1,x] = <{RESULT}>(result[1,x]//c)
+            result[2,x] = <{RESULT}>(result[2,x]//c)
+    return np.asarray(result)
