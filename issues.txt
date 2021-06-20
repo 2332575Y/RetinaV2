@@ -1,3 +1,0 @@
-- Float support
-- Platform support (CUDA, FPGA)
-- Generation performance
