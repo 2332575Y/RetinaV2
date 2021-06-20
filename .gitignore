@@ -10,3 +10,6 @@
 *.html
 *.pyx
 *.txt
+/build/*
+/__pycache__/*
+/.ipynb_checkpoints/*
