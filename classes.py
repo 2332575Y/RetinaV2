@@ -41,9 +41,11 @@ class Retina:
         self.getResult = None
         self.fixation = None
         self.sample = None
+        self.Arrays = None
         self.fname = fname
         self.shape = None
         self.size = None
+        self.RGB = None
 
         try:
             self.loadArrays()
@@ -53,7 +55,9 @@ class Retina:
             raise Exception('Could not find previously saved arrays! Please make sure to initlaize them.')
 
     def loadArrays(self):
-        self.size,self.scalingFactor,self.coeff_array,self.index_array,self.size_array,self.kernel_map = loadPickle(self.fname)
+        if self.Arrays is None:
+            self.Arrays = loadPickle(self.fname)
+        self.size,self.scalingFactor,self.coeff_array,self.index_array,self.size_array,self.kernel_map = self.Arrays
 
     def setInputResolution(self, w, h):
         self.input_resolution = np.array([h,w], dtype='int32')
@@ -146,10 +150,12 @@ class Retina:
             self.sample = self.sample_rgb
             self.backProject = self.backProject_rgb
             self.getResult = lambda: divideRGB(np.copy(self.sampledVector), self.scalingFactor)
+            self.RGB = True
         else:
             self.sample = self.sample_gray
             self.backProject = self.backProject_gray
             self.getResult = lambda: (self.sampledVector/self.scalingFactor).astype(types['RESULT'])
+            self.RGB = False
         
         self.setInputResolution(img.shape[1],img.shape[0])
         self.setFixation(img.shape[1]/2,img.shape[0]/2)
@@ -220,8 +226,7 @@ class Cortex:
     #########################################
 
     def calibrate(self, retina):
-        rgb = (len(retina.sampledVector.shape)==2) and (retina.sampledVector.shape[0]==3)
-        if rgb:
+        if retina.RGB:
             self.backProject = self.backProject_rgb
         else:
             self.backProject = self.backProject_gray

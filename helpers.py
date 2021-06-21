@@ -30,19 +30,19 @@ def get_retinaBackProjected_BGR(retina):
     return np.dstack([B,G,R]).reshape((h,w,3)).astype('uint8')
 
 def get_cortexBackProjected_GRAY(cortex):
-    Limg = get_retinaBackProjected_GRAY(cortex.left_hemi)
-    Rimg = get_retinaBackProjected_GRAY(cortex.right_hemi)
-    return np.concatenate((Limg, Rimg), axis=1)
+    cort_img = get_retinaBackProjected_GRAY(cortex)
+    cort_img[cortex.left_hemi_size[0]:,:] = np.rot90(cort_img[cortex.left_hemi_size[0]:,:],2)
+    return np.rot90(cort_img,1)
 
 def get_cortexBackProjected_RGB(cortex):
-    Limg = get_retinaBackProjected_RGB(cortex.left_hemi)
-    Rimg = get_retinaBackProjected_RGB(cortex.right_hemi)
-    return np.concatenate((Limg, Rimg), axis=1)
+    cort_img = get_retinaBackProjected_RGB(cortex)
+    cort_img[cortex.left_hemi_size[0]:,:,:] = np.rot90(cort_img[cortex.left_hemi_size[0]:,:,:],2)
+    return np.rot90(cort_img,1)
 
 def get_cortexBackProjected_BGR(cortex):
-    Limg = get_retinaBackProjected_BGR(cortex.left_hemi)
-    Rimg = get_retinaBackProjected_BGR(cortex.right_hemi)
-    return np.concatenate((Limg, Rimg), axis=1)
+    cort_img = get_retinaBackProjected_BGR(cortex)
+    cort_img[cortex.left_hemi_size[0]:,:,:] = np.rot90(cort_img[cortex.left_hemi_size[0]:,:,:],2)
+    return np.rot90(cort_img,1)
 
 def resize(img, size):
     return cv2.resize(img, dsize=(size[1], size[0]), interpolation=cv2.INTER_CUBIC)
