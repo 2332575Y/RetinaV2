@@ -66,7 +66,7 @@ class Retina:
         ones = np.ones(self.size[0]*self.size[1],dtype=types['INPUT'])
         self.sampledVector = np.zeros(len(self.size_array), dtype=types['RESULT'])
         sample(ones,self.coeff_array,self.sampledVector,self.size_array,self.index_array)
-        self.backProjectedVector = np.zeros(self.size[0]*self.size[1], dtype=types['BAKC_PROJECTED'])
+        self.backProjectedVector = np.zeros(self.size[0]*self.size[1], dtype=types['BACK_PROJECTED'])
         backProject(self.sampledVector, self.coeff_array, self.backProjectedVector, self.size_array, self.index_array)
         self.normalizationImage = np.copy(self.backProjectedVector)
         self.normalizationImage = self.normalizationImage.reshape(self.size)
@@ -119,7 +119,7 @@ class Retina:
         sample(img,self.coeff_array,self.sampledVector,self.size_array,self.index_array)
 
     def backProject_gray(self):
-        self.backProjectedVector = np.zeros(self.size[0]*self.size[1], dtype=types['BAKC_PROJECTED'])
+        self.backProjectedVector = np.zeros(self.size[0]*self.size[1], dtype=types['BACK_PROJECTED'])
         backProject(self.sampledVector, self.coeff_array, self.backProjectedVector, self.size_array, self.index_array)
         normalize(self.backProjectedVector, self.normalizationVector)
 
@@ -136,7 +136,7 @@ class Retina:
         sampleRGB(R, G, B, self.coeff_array, self.sampledVector[0], self.sampledVector[1], self.sampledVector[2], self.size_array, self.index_array)
 
     def backProject_rgb(self):
-        self.backProjectedVector = np.zeros((3,self.size[0]*self.size[1]), dtype=types['BAKC_PROJECTED'])
+        self.backProjectedVector = np.zeros((3,self.size[0]*self.size[1]), dtype=types['BACK_PROJECTED'])
         backProjectRGB(self.sampledVector[0], self.sampledVector[1], self.sampledVector[2], self.coeff_array, self.backProjectedVector[0], self.backProjectedVector[1], self.backProjectedVector[2], self.size_array, self.index_array)
         normalizeRGB(self.backProjectedVector[0], self.backProjectedVector[1], self.backProjectedVector[2], self.normalizationVector)
 
@@ -198,7 +198,7 @@ class Cortex:
         
     def createNormVect(self):
         ones = np.ones(len(self.size_array), dtype=types['RESULT'])
-        self.backProjectedVector = np.zeros(self.size[0]*self.size[1], dtype=types['BAKC_PROJECTED'])
+        self.backProjectedVector = np.zeros(self.size[0]*self.size[1], dtype=types['BACK_PROJECTED'])
         backProject(ones, self.coeff_array, self.backProjectedVector, self.size_array, self.index_array)
         self.normalizationVector = np.copy(self.backProjectedVector)
         self.normalizationVector[np.where(self.normalizationVector==0)]=1
@@ -208,7 +208,7 @@ class Cortex:
     ########################################
 
     def backProject_gray(self, sampledVector):
-        self.backProjectedVector = np.zeros(self.size[0]*self.size[1], dtype=types['BAKC_PROJECTED'])
+        self.backProjectedVector = np.zeros(self.size[0]*self.size[1], dtype=types['BACK_PROJECTED'])
         backProject(sampledVector, self.coeff_array, self.backProjectedVector, self.size_array, self.index_array)
         normalize(self.backProjectedVector, self.normalizationVector)
 
@@ -217,7 +217,7 @@ class Cortex:
     #########################################
 
     def backProject_rgb(self, sampledVector):
-        self.backProjectedVector = np.zeros((3,self.size[0]*self.size[1]), dtype=types['BAKC_PROJECTED'])
+        self.backProjectedVector = np.zeros((3,self.size[0]*self.size[1]), dtype=types['BACK_PROJECTED'])
         backProjectRGB(sampledVector[0], sampledVector[1], sampledVector[2], self.coeff_array, self.backProjectedVector[0], self.backProjectedVector[1], self.backProjectedVector[2], self.size_array, self.index_array)
         normalizeRGB(self.backProjectedVector[0], self.backProjectedVector[1], self.backProjectedVector[2], self.normalizationVector)
 

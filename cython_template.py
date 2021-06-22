@@ -64,7 +64,7 @@ cpdef sample({INPUT}[::1] img_flat, {COEFFICIENT}[::1] coeffs, {RESULT}[::1] res
 
 @cython.wraparound(False)
 @cython.boundscheck(False)            
-cpdef backProject({RESULT}[::1] result_flat, {COEFFICIENT}[::1] coeffs, {BAKC_PROJECTED}[::1] back_projected, {Kernel_Size}[::1] sizes, {INDEX}[::1] idx):
+cpdef backProject({RESULT}[::1] result_flat, {COEFFICIENT}[::1] coeffs, {BACK_PROJECTED}[::1] back_projected, {Kernel_Size}[::1] sizes, {INDEX}[::1] idx):
     cdef unsigned int x
     cdef {INDEX} j
     cdef {INDEX} i=0
@@ -72,13 +72,13 @@ cpdef backProject({RESULT}[::1] result_flat, {COEFFICIENT}[::1] coeffs, {BAKC_PR
         for x in range(sizes.shape[0]):
             for j in range(i, i+(sizes[x])):
                 if result_flat[x]>0:
-                    back_projected[idx[j]] += <{BAKC_PROJECTED}>result_flat[x]*coeffs[j]
+                    back_projected[idx[j]] += <{BACK_PROJECTED}>result_flat[x]*coeffs[j]
             i += sizes[x]
 
 @cython.wraparound(False)
 @cython.boundscheck(False)
 @cython.cdivision(True)
-cpdef normalize({BAKC_PROJECTED}[::1] BP_flat, {BAKC_PROJECTED}[::1] norm_flat):
+cpdef normalize({BACK_PROJECTED}[::1] BP_flat, {BACK_PROJECTED}[::1] norm_flat):
     cdef unsigned int x
     with nogil:
         for x in range(BP_flat.shape[0]):
@@ -105,24 +105,24 @@ cpdef sampleRGB({INPUT}[::1] R, {INPUT}[::1] G, {INPUT}[::1] B,  {COEFFICIENT}[:
 
 @cython.wraparound(False)
 @cython.boundscheck(False)            
-cpdef backProjectRGB({RESULT}[::1] result_R, {RESULT}[::1] result_G, {RESULT}[::1] result_B, {COEFFICIENT}[::1] coeffs, {BAKC_PROJECTED}[::1] bp_R, {BAKC_PROJECTED}[::1] bp_G, {BAKC_PROJECTED}[::1] bp_B, {Kernel_Size}[::1] sizes, {INDEX}[::1] idx):
+cpdef backProjectRGB({RESULT}[::1] result_R, {RESULT}[::1] result_G, {RESULT}[::1] result_B, {COEFFICIENT}[::1] coeffs, {BACK_PROJECTED}[::1] bp_R, {BACK_PROJECTED}[::1] bp_G, {BACK_PROJECTED}[::1] bp_B, {Kernel_Size}[::1] sizes, {INDEX}[::1] idx):
     cdef unsigned int x
     cdef {INDEX} j
     cdef {INDEX} i=0
     with nogil:
         for x in range(sizes.shape[0]):
             for j in range(i, i+(sizes[x])):
-                    bp_R[idx[j]] += <{BAKC_PROJECTED}>result_R[x]*coeffs[j]
-                    bp_G[idx[j]] += <{BAKC_PROJECTED}>result_G[x]*coeffs[j]
-                    bp_B[idx[j]] += <{BAKC_PROJECTED}>result_B[x]*coeffs[j]
+                    bp_R[idx[j]] += <{BACK_PROJECTED}>result_R[x]*coeffs[j]
+                    bp_G[idx[j]] += <{BACK_PROJECTED}>result_G[x]*coeffs[j]
+                    bp_B[idx[j]] += <{BACK_PROJECTED}>result_B[x]*coeffs[j]
             i += sizes[x]
 
 @cython.wraparound(False)
 @cython.boundscheck(False)
 @cython.cdivision(True)
-cpdef normalizeRGB({BAKC_PROJECTED}[::1] R_flat, {BAKC_PROJECTED}[::1] G_flat, {BAKC_PROJECTED}[::1] B_flat, {BAKC_PROJECTED}[::1] norm_flat):
+cpdef normalizeRGB({BACK_PROJECTED}[::1] R_flat, {BACK_PROJECTED}[::1] G_flat, {BACK_PROJECTED}[::1] B_flat, {BACK_PROJECTED}[::1] norm_flat):
     cdef unsigned int x
-    cdef {BAKC_PROJECTED} c
+    cdef {BACK_PROJECTED} c
     with nogil:
         for x in range(R_flat.shape[0]):
             c = norm_flat[x]
