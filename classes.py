@@ -70,7 +70,6 @@ class Retina:
         backProject(self.sampledVector, self.coeff_array, self.backProjectedVector, self.size_array, self.index_array)
         self.normalizationImage = np.copy(self.backProjectedVector)
         self.normalizationImage = self.normalizationImage.reshape(self.size)
-        self.normalizationImage[np.where(self.normalizationImage==0)]=1
 
     ########################################
     ############### FIXATION ###############
@@ -201,7 +200,6 @@ class Cortex:
         self.backProjectedVector = np.zeros(self.size[0]*self.size[1], dtype=types['BACK_PROJECTED'])
         backProject(ones, self.coeff_array, self.backProjectedVector, self.size_array, self.index_array)
         self.normalizationVector = np.copy(self.backProjectedVector)
-        self.normalizationVector[np.where(self.normalizationVector==0)]=1
 
     ########################################
     ############## GRAY SCALE ##############

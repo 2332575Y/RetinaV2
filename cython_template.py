@@ -82,7 +82,7 @@ cpdef normalize({BACK_PROJECTED}[::1] BP_flat, {BACK_PROJECTED}[::1] norm_flat):
     cdef unsigned int x
     with nogil:
         for x in range(BP_flat.shape[0]):
-            if norm_flat[x]>1:
+            if norm_flat[x]>0:
                 BP_flat[x] = BP_flat[x]//norm_flat[x]
 
 #########################################
@@ -126,7 +126,7 @@ cpdef normalizeRGB({BACK_PROJECTED}[::1] R_flat, {BACK_PROJECTED}[::1] G_flat, {
     with nogil:
         for x in range(R_flat.shape[0]):
             c = norm_flat[x]
-            if c>1:
+            if c>0:
                 R_flat[x] = R_flat[x]//c
                 G_flat[x] = G_flat[x]//c
                 B_flat[x] = B_flat[x]//c
