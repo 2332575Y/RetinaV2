@@ -2,11 +2,15 @@
  Faster and more simplified version of the CPU based retina
 
 # Requirements:
-Python 3\n
-Numpy\n
-Cython\n
-OpenCV\n
-C++ compiler (Visual studio on windows / GCC on linux)\n
+Python 3
+
+Numpy
+
+Cython
+
+OpenCV
+
+C++ compiler (Visual studio on windows / GCC on linux)
 
 # Instructions:
 # 1) Run  the "Generator - GUI.ipynb" notebook
