@@ -143,18 +143,16 @@ class Retina:
     ######## CALIBRATE SIZE AND TYPE ########
     #########################################
 
-    def calibrate(self, img):
-        rgb = (len(img.shape)==3) and (img.shape[-1]==3)
-        if rgb:
+    def calibrate(self, img): 
+        self.RGB = (len(img.shape)==3) and (img.shape[-1]==3)
+        if self.RGB:
             self.sample = self.sample_rgb
             self.backProject = self.backProject_rgb
             self.getResult = lambda: divideRGB(np.copy(self.sampledVector), self.scalingFactor)
-            self.RGB = True
         else:
             self.sample = self.sample_gray
             self.backProject = self.backProject_gray
             self.getResult = lambda: (self.sampledVector/self.scalingFactor).astype(types['RESULT'])
-            self.RGB = False
         
         self.setInputResolution(img.shape[1],img.shape[0])
         self.setFixation(img.shape[1]/2,img.shape[0]/2)
@@ -228,3 +226,83 @@ class Cortex:
             self.backProject = self.backProject_rgb
         else:
             self.backProject = self.backProject_gray
+
+#===============================================================================================================================
+#===============================================================================================================================
+#             ██████╗ ██╗   ██╗██████╗  █████╗ ███╗   ███╗██╗██████╗     ██╗     ███████╗██╗   ██╗███████╗██╗     
+#             ██╔══██╗╚██╗ ██╔╝██╔══██╗██╔══██╗████╗ ████║██║██╔══██╗    ██║     ██╔════╝██║   ██║██╔════╝██║     
+#             ██████╔╝ ╚████╔╝ ██████╔╝███████║██╔████╔██║██║██║  ██║    ██║     █████╗  ██║   ██║█████╗  ██║     
+#             ██╔═══╝   ╚██╔╝  ██╔══██╗██╔══██║██║╚██╔╝██║██║██║  ██║    ██║     ██╔══╝  ╚██╗ ██╔╝██╔══╝  ██║     
+#             ██║        ██║   ██║  ██║██║  ██║██║ ╚═╝ ██║██║██████╔╝    ███████╗███████╗ ╚████╔╝ ███████╗███████╗
+#             ╚═╝        ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝╚═════╝     ╚══════╝╚══════╝  ╚═══╝  ╚══════╝╚══════╝
+#===============================================================================================================================
+#===============================================================================================================================
+
+class Pyramid_Level:
+    def __init__(self, coeff_array, index_array, size_array, input_dimension, scalingFactor):
+        self.scalingFactor = scalingFactor
+        self.coeff_array = coeff_array
+        self.index_array = index_array
+        self.size_array = size_array
+        self.out_dim = len(size_array)
+        self.in_dim = input_dimension
+        self.backProjectedVector = None
+        self.normalizationVector = None
+        self.sampledVector = None
+        self.backProject = None
+        self.getResult = None
+        self.sample = None
+        
+        self.createNormVect()
+        
+    def createNormVect(self):
+        ones = np.ones(self.in_dim ,dtype=types['INPUT'])
+        self.sampledVector = np.zeros(self.out_dim, dtype=types['RESULT'])
+        sample(ones,self.coeff_array,self.sampledVector,self.size_array,self.index_array)
+        self.backProjectedVector = np.zeros(self.in_dim, dtype=types['BACK_PROJECTED'])
+        backProject(self.sampledVector, self.coeff_array, self.backProjectedVector, self.size_array, self.index_array)
+        self.normalizationVector = np.copy(self.backProjectedVector)
+
+    ########################################
+    ############## GRAY SCALE ##############
+    ########################################
+
+    def sample_gray(self, img_vect):
+        self.sampledVector = np.zeros(self.out_dim, dtype=types['RESULT'])
+        sample(img_vect,self.coeff_array,self.sampledVector,self.size_array,self.index_array)
+
+    def backProject_gray(self):
+        self.backProjectedVector = np.zeros(self.in_dim, dtype=types['BACK_PROJECTED'])
+        backProject(self.sampledVector, self.coeff_array, self.backProjectedVector, self.size_array, self.index_array)
+        normalize(self.backProjectedVector, self.normalizationVector)
+
+    #########################################
+    ################## RGB ##################
+    #########################################
+
+    def sample_rgb(self, img_vect):
+        self.sampledVector = np.zeros((3, self.out_dim), dtype=types['RESULT'])
+        R = img_vect[0]
+        G = img_vect[1]
+        B = img_vect[2]
+        sampleRGB(R, G, B, self.coeff_array, self.sampledVector[0], self.sampledVector[1], self.sampledVector[2], self.size_array, self.index_array)
+
+    def backProject_rgb(self):
+        self.backProjectedVector = np.zeros((3, self.in_dim), dtype=types['BACK_PROJECTED'])
+        backProjectRGB(self.sampledVector[0], self.sampledVector[1], self.sampledVector[2], self.coeff_array, self.backProjectedVector[0], self.backProjectedVector[1], self.backProjectedVector[2], self.size_array, self.index_array)
+        normalizeRGB(self.backProjectedVector[0], self.backProjectedVector[1], self.backProjectedVector[2], self.normalizationVector)
+
+    #########################################
+    ######## CALIBRATE SIZE AND TYPE ########
+    #########################################
+
+    def calibrate(self, img_vect):
+        rgb = (len(img_vect.shape)==2) and (img_vect.shape[0]==3)
+        if rgb:
+            self.sample = self.sample_rgb
+            self.backProject = self.backProject_rgb
+            self.getResult = lambda: divideRGB(np.copy(self.sampledVector), self.scalingFactor)
+        else:
+            self.sample = self.sample_gray
+            self.backProject = self.backProject_gray
+            self.getResult = lambda: (self.sampledVector/self.scalingFactor).astype(types['RESULT'])
