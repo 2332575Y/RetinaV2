@@ -20,3 +20,5 @@ C++ compiler (Visual studio on windows / GCC on linux)
 # 5) Compile the Cython extension (functions.pyx). This should create the functions.pyd on windows and functions.so file on linux.
 # 6) Select the data files for retina and cortex and generate arrays (some example data can be found at https://github.com/2332575Y/Retina which is a previous version of the CPU based software retina).
 # 7) You can now run the demo or the performance benchmark.
+
+Note: to use the pyramid demo, you MUST use float64 when generating the config. Dynamic typing is not supported for pyramids yet!
